@@ -1,130 +1,248 @@
-import matplotlib.pyplot
-import numpy
-import pandas
+import pandas as pd
+import numpy as np
+import datetime
 import matplotlib.pyplot as plt
-from matplotlib.axes import Axes
+
+def render_mpl_table(data, col_width=3.0, row_height=0.625, font_size=14,
+                     header_color='#40466e', row_colors=['#f1f1f2', 'w'], edge_color='w',
+                     bbox=[0, 0, 1, 1], header_columns=0,
+                     ax=None, **kwargs):
+    if ax is None:
+        size = (np.array(data.shape[::-1]) + np.array([0, 1])) * np.array([col_width, row_height])
+        fig, ax = plt.subplots(figsize=size)
+        ax.axis('off')
+    mpl_table = ax.table(cellText=data.values, bbox=bbox, colLabels=data.columns, **kwargs)
+    mpl_table.auto_set_font_size(False)
+    mpl_table.set_fontsize(font_size)
+
+    for k, cell in mpl_table._cells.items():
+        cell.set_edgecolor(edge_color)
+        if k[0] == 0 or k[1] < header_columns:
+            cell.set_text_props(weight='bold', color='w')
+            cell.set_facecolor(header_color)
+        else:
+            cell.set_facecolor(row_colors[k[0]%len(row_colors) ])
+    return ax.get_figure(), ax
+
+currency_to_rub = {
+    "AZN": 51.5563,
+    "BYR": 27.8408,
+    "EUR": 95.6007,
+    "GEL": 32.9718,
+    "KGS": 98.1295,
+    "KZT": 19.4177,
+    "RUR": 1,
+    "UAH": 2.31474,
+    "USD": 87.6457,
+    "UZS": 0.007135,
+}
+
+def calculate_avg_salary(row, conversion_rates):
+    if pd.isna(row['salary_from']):
+        avg_salary = row['salary_to']
+    elif pd.isna(row['salary_to']):
+        avg_salary = row['salary_from']
+    else:
+        avg_salary = (row['salary_to'] + row['salary_from']) / 2
+
+    if pd.isna(row['salary_currency']):
+        currency_rate = 1
+    else:
+        currency_rate = conversion_rates[row['salary_currency']]
+
+    avg_salary_rub = avg_salary * currency_rate
+    return avg_salary_rub
+
+dtype_dict = {'name': 'str','key_skills': 'str', 'salary_from': 'float64', 'salary_to': 'float64',
+              'salary_currency': 'str', 'area_name': 'str', 'published_at': 'str'}
+df = pd.read_csv('vacancies.csv', dtype=dtype_dict)
+df = df.dropna(subset=['salary_from', 'salary_to'], how='all')
+df = df.dropna(subset=['salary_currency'], how='all')
+df = df.dropna(subset=['area_name'], how='all')
+df = df.dropna(subset=['published_at'], how='all')
+print(df)
+df['published_at'] = df['published_at'].apply(lambda x: datetime.datetime.strptime(x[:10], '%Y-%m-%d'))
 
 
-def read_data(file_path: str) -> pandas.DataFrame:
-    return (
-        pandas
-        .read_csv(
-            file_path,
-            names=["name", "salary_from", "salary_to", "salary_currency", "area_name", "published_at"],
-        )
-        .loc[lambda df: df["salary_currency"] == "RUR"]
-        .assign(
-            year=lambda d: d["published_at"].apply(lambda date: date.split("-")[0]).astype(int),
-            salary_from=lambda df: df["salary_from"].fillna(df["salary_to"]),
-            salary_to=lambda df: df["salary_to"].fillna(df["salary_from"]),
-            salary_avg=lambda df: (df["salary_from"] + df["salary_to"]) / 2
-        )
-    )
+df['year_published'] = df['published_at'].dt.year
 
 
-def filter_by_profession(dataframe: pandas.DataFrame, profession: str) -> pandas.DataFrame:
-    return dataframe.loc[lambda df: df["name"].str.contains(profession, case=False)]
+df['average_salary'] = df.apply(lambda row: calculate_avg_salary(row, currency_to_rub), axis=1)
+df = df.query('average_salary <= 500000')
+
+df['published_at'] = pd.to_datetime(df['published_at'])
 
 
-def salary_dynamic_by_years(dataframe: pandas.DataFrame, profession: str = None) -> dict:
-    all_years = range(dataframe["year"].min(), dataframe["year"].max() + 1)
-    if profession is not None:
-        dataframe = filter_by_profession(dataframe, profession)
-    return dataframe.groupby("year")["salary_avg"].mean().reindex(all_years, fill_value=0).round().to_dict()
+df['year_published'] = df['published_at'].dt.year
 
 
-def vacancies_count_by_years(dataframe: pandas.DataFrame, profession: str = None) -> dict:
-    all_years = range(dataframe["year"].min(), dataframe["year"].max() + 1)
-    if profession is not None:
-        dataframe = filter_by_profession(dataframe, profession)
-    return dataframe.groupby("year")["salary_avg"].count().reindex(all_years, fill_value=0).to_dict()
+avg_salary_year = df.groupby('year_published')['average_salary'].mean()
+vacancy_count_by_year = df.groupby('year_published').size()
 
 
-def filter_by_count(dataframe: pandas.DataFrame, threshold: float) -> pandas.DataFrame:
-    return dataframe.groupby("area_name").filter(lambda df: df["salary_avg"].count() > threshold)
+import matplotlib.pyplot as plt
 
 
-def salary_dynamic_by_cities(dataframe: pandas.DataFrame, profession: str = None) -> dict:
-    if profession is not None:
-        dataframe = filter_by_profession(dataframe, profession)
-    dataframe = filter_by_count(dataframe, len(dataframe) // 100)
-    return (
-        dataframe
-        .groupby("area_name")["salary_avg"]
-        .mean().round()
-        .reset_index()
-        .sort_values(by=["salary_avg", "area_name"], ascending=[False, True])
-        .set_index("area_name")["salary_avg"]
-        .head(10)
-    ).to_dict()
+plt.figure(figsize=(10, 6))
+plt.plot(avg_salary_year.index, avg_salary_year.values, marker='o')
+plt.title('Динамика уровня зарплат по годам')
+plt.xlabel('Год')
+plt.ylabel('Средняя зарплата')
+
+plt.savefig('Accounts/static/images2/salary_year.png')
+
+sf = pd.DataFrame({'Год':avg_salary_year.index, 'Зарплата':np.round(avg_salary_year.values,
+                                                                    decimals = 2)})
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("Accounts/static/images2/table_salary_year.png")
 
 
-def vacancies_percentage_by_cities(dataframe: pandas.DataFrame, profession: str = None) -> dict:
-    if profession is not None:
-        dataframe = filter_by_profession(dataframe, profession)
-    total_vacancies = len(dataframe)
-    dataframe = filter_by_count(dataframe, total_vacancies // 100)
-    return (
-        dataframe
-        .groupby("area_name")["salary_avg"]
-        .size()
-        .div(total_vacancies).mul(100).round(2)
-        .reset_index()
-        .sort_values(by=["salary_avg", "area_name"], ascending=[False, True])
-        .set_index("area_name")["salary_avg"]
-        .head(10)
-    ).to_dict()
+plt.figure(figsize=(10, 6))
+plt.plot(vacancy_count_by_year.index, vacancy_count_by_year.values, marker='o', color='r')
+plt.title('Динамика количества вакансий по годам')
+plt.xlabel('Год')
+plt.ylabel('Количество вакансий')
+plt.savefig('Accounts/static/images2/count_year.png')
+sf = pd.DataFrame({'Год':vacancy_count_by_year.index, 'Количество': np.round(vacancy_count_by_year.values,
+                       decimals = 2)  })
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("Accounts/static/images2/table_count_year.png")
 
 
-def add_years_bars(sub: Axes, dict_1: dict, dict_2: dict, label_1: str, label_2: str):
-    x = numpy.array(list(dict_1.keys()))
-    y_1 = numpy.array(list(dict_1.values()))
-    y_2 = numpy.array(list(dict_2.values()))
-
-    bar_width = 0.8
-    sub.bar(x - bar_width / 4, y_1, width=bar_width / 2, label=label_1)
-    sub.bar(x + bar_width / 4, y_2, width=bar_width / 2, label=label_2)
-    sub.set_xticks(x)
-    sub.tick_params(axis="both", labelsize=8)
-    sub.tick_params(axis="x", rotation=90)
-    sub.legend(fontsize=8)
-    sub.grid(axis="y")
+selected_df = df[df['name'].str.contains("1С") | df['name'].str.contains("1C")]
 
 
-def add_cities_bar(sub: Axes, dict_: dict):
-    y = [city.replace(" ", "\n").replace("-", "-\n") for city in dict_.keys()]
-    x = list(dict_.values())
-
-    sub.barh(y, x)
-    sub.invert_yaxis()
-    sub.tick_params(axis="x", labelsize=8)
-    sub.tick_params(axis="y", labelsize=6)
-    sub.set_yticks(y)
-    sub.set_yticklabels(y, ha='right', va='center')
-    sub.grid(axis="x")
+average_salary_by_year_selected = selected_df.groupby('year_published')['average_salary'].mean()
+vacancy_count_by_year_selected = selected_df.groupby('year_published').size()
 
 
-def add_cities_pie(sub: Axes, dict_: dict):
-    vals = [100 - sum(dict_.values())] + list(dict_.values())
-    labels = ["Другие"] + list(dict_.keys())
+plt.figure(figsize=(10, 6))
+plt.plot(average_salary_by_year_selected.index, average_salary_by_year_selected.values, marker='o', color='g')
+plt.title('Динамика уровня зарплат для выбранной профессии по годам')
+plt.xlabel('Год')
+plt.ylabel('Средняя зарплата')
+plt.savefig('Accounts/static/images2/salary_year_vac.png')
+sf = pd.DataFrame({'Год':average_salary_by_year_selected.index, 'Зарплата':np.round(average_salary_by_year_selected.values,
+                       decimals = 2)  })
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("Accounts/static/images2/table_salary_year_vac.png")
 
-    sub.pie(vals, labels=labels, startangle=0, textprops={'fontsize': 6})
+plt.figure(figsize=(10, 6))
+plt.plot(vacancy_count_by_year_selected.index, vacancy_count_by_year_selected.values, marker='o', color='b')
+plt.title('Динамика количества вакансий для выбранной профессии по годам')
+plt.xlabel('Год')
+plt.ylabel('Количество вакансий')
+plt.savefig('Accounts/static/images2/count_year_vac.png')
+
+sf = pd.DataFrame({'Год':vacancy_count_by_year_selected.index, 'Количество':np.round(vacancy_count_by_year_selected.values,
+                       decimals = 2)})
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("graphics/table_count_year_vac.png")
 
 
-def create_plot():
-    csv = 'vacancies.csv'
-    vac = input()
-    data = read_data(csv)
+avg_salary_year = df.groupby('area_name')['average_salary'].mean()
+vacancy_count_by_year = df.groupby('area_name').size().sort_values(ascending=False).head(10)
+avg_salary_year = avg_salary_year.sort_values(ascending=False).head(10)
 
-    fig, sub = plt.subplots(2, 2)
-    (sub_1, sub_2), (sub_3, sub_4) = sub
 
-    add_years_bars(sub_1, salary_dynamic_by_years(data), salary_dynamic_by_years(data, vac),
-                   "средняя з/п", f"з/п {vac}")
-    add_years_bars(sub_2, vacancies_count_by_years(data), vacancies_count_by_years(data, vac),
-                   "Количество вакансий", f"Количество вакансий {vac}")
-    add_cities_bar(sub_3, salary_dynamic_by_cities(data))
-    add_cities_pie(sub_4, vacancies_percentage_by_cities(data))
 
-    plt.tight_layout()
-    return sub
+plt.figure(figsize=(10, 6))
+plt.plot(avg_salary_year.index, avg_salary_year.values, marker='o')
+plt.title('Динамика уровня зарплат по городам')
+plt.xlabel('Город')
+plt.ylabel('Средняя зарплата')
+
+plt.savefig('graphics/salary_city.png')
+
+sf = pd.DataFrame({'Город':avg_salary_year.index, 'Зарплата':np.round(avg_salary_year.values,
+                                                                      decimals = 2)})
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("graphics/table_salary_city.png")
+
+
+plt.figure(figsize=(10, 6))
+plt.plot(vacancy_count_by_year.index, vacancy_count_by_year.values, marker='o', color='r')
+plt.title('Динамика количества вакансий по городам')
+plt.xlabel('Город')
+plt.ylabel('Количество вакансий')
+plt.savefig('graphics/count_city.png')
+
+sf = pd.DataFrame({'Город':vacancy_count_by_year.index, 'Количество':np.round(vacancy_count_by_year.values,
+                       decimals = 2)})
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("graphics/table_count_city.png")
+
+
+selected_df = df[df['name'].str.contains("1С") | df['name'].str.contains("1C") | df['name'].str.contains("1c")
+            | df['name'].str.contains("1 c") | df['name'].str.contains("1с") | df['name'].str.contains("1 с")]
+
+
+average_salary_by_year_selected = selected_df.groupby('area_name')['average_salary'].mean()
+vacancy_count_by_year_selected = selected_df.groupby('area_name').size().sort_values(ascending=False).head(10)
+average_salary_by_year_selected = average_salary_by_year_selected.sort_values(ascending=False).head(10)
+
+plt.figure(figsize=(10, 6))
+plt.plot(average_salary_by_year_selected.index, average_salary_by_year_selected.values, marker='o', color='g')
+plt.title('Динамика уровня зарплат для выбранной профессии по городам')
+plt.xlabel('Год')
+plt.ylabel('Средняя зарплата')
+plt.savefig('graphics/salary_city_vac.png')
+
+sf = pd.DataFrame({'Город':average_salary_by_year_selected.index, 'Зарплата':np.round(average_salary_by_year_selected.values,
+                       decimals = 2)})
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("graphics/table_salary_city_vac.png")
+
+
+plt.figure(figsize=(10, 6))
+plt.plot(vacancy_count_by_year_selected.index, vacancy_count_by_year_selected.values, marker='o', color='b')
+plt.title('Динамика количества вакансий для выбранной профессии по городам')
+plt.xlabel('Год')
+plt.ylabel('Количество вакансий')
+plt.savefig('graphics/count_city_vac.png')
+
+sf = pd.DataFrame({'Город':vacancy_count_by_year_selected.index, 'Количество':np.round(vacancy_count_by_year_selected.values,
+                       decimals = 2)})
+fig,ax = render_mpl_table(sf, header_columns=0, col_width=2.0)
+fig.savefig("graphics/table_count_city_vac.png")
+
+skills = df['key_skills'].str.split('\n').explode().value_counts()
+
+top_skills = skills.head(20)
+
+colors = plt.cm.tab20c(range(len(top_skills)))
+plt.figure(figsize=(10, 6))
+bars = plt.barh(top_skills.index[::-1], top_skills.values[::-1], color=colors[::-1])
+
+plt.title('Топ 20 популярных навыков')
+plt.xlabel('Количество')
+plt.ylabel('Навык')
+
+handles = [plt.Rectangle((0,0),1,1, color=color) for color in colors]
+plt.legend(handles[::], top_skills.index[::], loc='lower right')
+
+plt.gca().axes.get_xaxis().set_visible(False)
+plt.gca().axes.get_yaxis().set_visible(False)
+
+plt.savefig('graphics/skills.png')
+
+skills = selected_df['key_skills'].str.split('\n').explode().value_counts()
+
+top_skills = skills.head(20)
+
+colors = plt.cm.tab20c(range(len(top_skills)))
+plt.figure(figsize=(10, 6))
+bars = plt.barh(top_skills.index[::-1], top_skills.values[::-1], color=colors[::-1])
+
+plt.title('Топ 20 популярных навыков\nдля python разработчика')
+plt.xlabel('Количество')
+plt.ylabel('Навык')
+
+# Добавление легенды в обратном порядке
+handles = [plt.Rectangle((0,0),1,1, color=color) for color in colors]
+plt.legend(handles[::], top_skills.index[::], loc='lower right')
+
+plt.gca().axes.get_xaxis().set_visible(False)
+plt.gca().axes.get_yaxis().set_visible(False)
+
+plt.savefig('graphics/skills_vac.png')
