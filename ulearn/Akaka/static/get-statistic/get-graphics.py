@@ -118,7 +118,7 @@ vacancy_count_by_year_selected = selected_df.groupby('year_published').size()
 
 plt.figure(figsize=(7, 4))
 plt.plot(average_salary_by_year_selected.index, average_salary_by_year_selected.values, marker='o', color='b')
-plt.title('Динамика уровня зарплат для выбранной профессии по годам')
+plt.title('Динамика уровня зарплат для профессии 1С-разработчик по годам')
 plt.xlabel('Год')
 plt.ylabel('Средняя зарплата')
 plt.rc('xtick', labelsize= 10 )
@@ -130,7 +130,7 @@ fig.savefig("graphics/table_salary_year_vac.png")
 
 plt.figure(figsize=(7, 4))
 plt.plot(vacancy_count_by_year_selected.index, vacancy_count_by_year_selected.values, marker='o', color='b')
-plt.title('Динамика количества вакансий для выбранной профессии по годам')
+plt.title('Динамика количества вакансий для профессии 1С-разработчик по годам')
 plt.xlabel('Год')
 plt.ylabel('Количество вакансий')
 plt.savefig('graphics/count_year_vac.png')
@@ -145,8 +145,8 @@ avg_salary_year = df.groupby('area_name')['average_salary'].mean()
 vacancy_count_by_year = df.groupby('area_name').size().sort_values(ascending=False).head(10)
 avg_salary_year = avg_salary_year.sort_values(ascending=False).head(10)
 
-plt.figure(figsize=(7, 4))
-plt.plot(avg_salary_year.values, avg_salary_year.index, marker='o')
+plt.figure(figsize=(17, 7))
+plt.barh(avg_salary_year.index, avg_salary_year.values, )
 plt.title('Динамика уровня зарплат по городам')
 plt.xlabel('Город')
 plt.ylabel('Средняя зарплата')
@@ -155,16 +155,16 @@ plt.savefig('graphics/salary_city.png')
 sf = pd.DataFrame({'Город':avg_salary_year.index, 'Зарплата':np.round(avg_salary_year.values,
                                                                       decimals = 2)})
 fig,ax = render_mpl_table(sf, header_columns=0, col_width=5.0)
-plt.rc('ytick', labelsize= 8 )
+
 fig.savefig("graphics/table_salary_city.png")
 
 
-plt.figure(figsize=(7, 4))
-plt.plot(vacancy_count_by_year.values, vacancy_count_by_year.index, marker='o', color='b')
+plt.figure(figsize=(15, 7))
+plt.barh(vacancy_count_by_year.index, vacancy_count_by_year.values, color='b')
 plt.title('Динамика количества вакансий по городам')
 plt.xlabel('Город')
 plt.ylabel('Количество вакансий')
-plt.rc('ytick', labelsize= 8 )
+
 plt.savefig('graphics/count_city.png')
 
 sf = pd.DataFrame({'Город':vacancy_count_by_year.index, 'Количество':np.round(vacancy_count_by_year.values,
@@ -181,12 +181,12 @@ average_salary_by_year_selected = selected_df.groupby('area_name')['average_sala
 vacancy_count_by_year_selected = selected_df.groupby('area_name').size().sort_values(ascending=False).head(10)
 average_salary_by_year_selected = average_salary_by_year_selected.sort_values(ascending=False).head(10)
 
-plt.figure(figsize=(7, 4))
-plt.plot(average_salary_by_year_selected.values, average_salary_by_year_selected.index, marker='o', color='b')
-plt.title('Динамика уровня зарплат для выбранной профессии по городам')
-plt.xlabel('Город')
-plt.ylabel('Средняя зарплата')
-plt.rc('ytick', labelsize= 8 )
+plt.figure(figsize=(17, 7))
+plt.barh(average_salary_by_year_selected.index, average_salary_by_year_selected.values, color='b')
+plt.title('Динамика уровня зарплат для профессии 1С-разработчик по городам')
+plt.ylabel('Город')
+plt.xlabel('Средняя зарплата')
+
 plt.savefig('graphics/salary_city_vac.png')
 
 sf = pd.DataFrame({'Город':average_salary_by_year_selected.index, 'Зарплата':np.round(average_salary_by_year_selected.values,
@@ -195,11 +195,12 @@ fig,ax = render_mpl_table(sf, header_columns=0, col_width=6.0)
 fig.savefig("graphics/table_salary_city_vac.png")
 
 
-plt.figure(figsize=(15, 9))
-plt.plot(vacancy_count_by_year_selected.values, vacancy_count_by_year_selected.index, marker='o', color='b')
-plt.title('Динамика количества вакансий для выбранной профессии по городам')
-plt.xlabel('Город')
-plt.ylabel('Количество вакансий')
+plt.figure(figsize=(15, 7))
+plt.barh(vacancy_count_by_year_selected.index, vacancy_count_by_year_selected.values, color='b')
+plt.title('Динамика количества вакансий для профессии 1С-разработчик по городам')
+plt.ylabel('Город')
+
+plt.xlabel('Количество вакансий')
 plt.savefig('graphics/count_city_vac.png')
 
 sf = pd.DataFrame({'Количество':np.round(vacancy_count_by_year_selected.values,
@@ -236,7 +237,7 @@ colors = plt.cm.tab20c(range(len(top_skills)))
 plt.figure(figsize=(10, 6))
 bars = plt.barh(top_skills.index[::-1], top_skills.values[::-1], color=colors[::-1])
 
-plt.title('Топ 20 популярных навыков\nдля python разработчика')
+plt.title('Топ 20 популярных навыков\nдля 1C-разработчика')
 plt.xlabel('Количество')
 plt.ylabel('Навык')
 

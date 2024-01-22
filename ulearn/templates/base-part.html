@@ -13,21 +13,22 @@
     <title>1C django-proj</title>
   </head>
   <body class="page">
+
     <header class="page-header">
       
       <nav class="main-nav">
         <p class="logo">
-          <img src="{% static 'img/1C_(Unternehmen)_logo.svg' %}" width="85" height="68" alt="Логотип яхт-клуба Yacht Club">
+          <a href="{% url 'home' %}"><img src="{% static 'img/1C_(Unternehmen)_logo.svg' %}" width="85" height="68"></a>
         </p>
         <ul class="site-navigation">
           <li class="site-navigation-item">
-            <a href="{% url 'home' %}">Востребованность</a>
+            <a href="{% url 'popular' %}">Востребованность</a>
           </li>
           <li class="site-navigation-item">
-            <a href="#">География</a>
+            <a href="{% url 'areas' %}">География</a>
           </li>
           <li class="site-navigation-item">
-            <a href="#">Навыки</a>
+            <a href="{% url 'skills' %}">Навыки</a>
           </li>
           <li class="site-navigation-item">
             <a href="#">Последние вакансии</a>
@@ -58,6 +59,7 @@
       </nav>
     </header>
 
+
     <main>
         {% block content %}
         {% endblock %}
@@ -80,7 +82,5 @@
       </footer>
       <script src="{% static 'scrips/font.js'%}"></script>
       <script src="{% static 'scrips/theme.js'%}"></script>
-      <script src="{% static 'scrips/gallery.js'%}"></script>
-      <script src="{% static 'scrips/cards-position.js'%}"></script>
     </body>
   </html>

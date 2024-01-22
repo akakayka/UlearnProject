@@ -1,76 +1,14 @@
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Philosopher:ital,wght@0,400;0,700;1,400&family=Roboto:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <title>1C django-proj</title>
-  </head>
-  <body class="page">
-    <header class="page-header">
+{% extends 'base-part.html' %}
+{% load static %}
 
-      <nav class="main-nav">
-        <p class="logo">
-          <img src="img/1C_(Unternehmen)_logo.svg" width="85" height="68">
-        </p>
-        <ul class="site-navigation">
-          <li class="site-navigation-item">
-            <a href="#">Востребованность</a>
-          </li>
-          <li class="site-navigation-item">
-            <a href="#">География</a>
-          </li>
-          <li class="site-navigation-item">
-            <a href="#">Навыки</a>
-          </li>
-          <li class="site-navigation-item">
-            <a href="#">Последние вакансии</a>
-          </li>
 
-        </ul>
-        <div class="services-content">
-          <p class="caption">Тема</p>
-          <ul class="theme-switcher">
-            <li>
-              <button class="theme-button-dark" type="button"></button>
-            </li>
-            <li>
-              <button class="theme-button-light active" type="button"></button>
-            </li>
-          </ul>
-          <p class="caption">Шрифт</p>
-          <ul class="fonts">
-            <li>
-              <button class="font-button-sans-serif active" type="button">А</button>
-            </li>
-            <li>
-              <button class="font-button-serif" type="button">А</button>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
 
-    <footer class="main-footer">
-        <div class="footer-container">
-          <div class="footer-column">
-            <p class="logo">
-              <img src="img/1C_(Unternehmen)_logo.svg" width="100" height="106">
-            </p>
-            <p class="policy"><a href="#">Политика конфиденциальности</a></p>
-            <p class="copyright">Akakayka ©2020 Все права защищены</p>
-          </div>
-          <div>
-            <h1 class="my-info my-name">Тетюшев Тимофей Сергеевич</h1>
-            <h1 class="my-info">Группа: РИ-220941</h1>
-          </div>
-        </div>
-      </footer>
-      <script src="scrips/font.js"></script>
-      <script src="scrips/theme.js"></script>
-      <script src="scrips/gallery.js"></script>
-      <script src="scrips/cards-position.js"></script>
-    </body>
-  </html>
+{% block content %}
+    <main class="main-content">
+      <h1></h1>
+      
+    </main>
+
+    <script src="{% static 'scrips/font.js'%"}></script>
+    <script src="{% static 'scrips/theme.js'%}"></script>
+  {% endblock %}

@@ -1,3 +1,5 @@
+
+
 body {
   margin: 0;
   font-family: "Roboto", sans-serif;
@@ -23,6 +25,54 @@ body {
 
 .my-info {
   font-size: 30px !important;
+}
+
+.table-container {
+  display: flex;
+  
+}
+
+.container-info {
+  padding: 10px;
+  margin-left: auto;
+  margin-right: auto;
+
+  
+}
+
+.section-stat {
+  border: 5px dashed #163152;
+  background-color: #00c6bd;
+  padding: 10px;
+  
+}
+
+.stat-header {
+  text-align: center;
+  font-size: 24px;
+  line-height: 34px;
+  text-decoration: underline;
+  text-decoration-color: #00c6bd;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 15px;
+  text-underline-position: under;
+  margin-bottom: 30px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.big-graphic {
+  margin-top: 50px;
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+.stat-info {
+  margin-top: 50px;
+  font-size: 25px;
+  margin-right: auto;
+  width: 300px !important;
 }
 
 .services-content {
