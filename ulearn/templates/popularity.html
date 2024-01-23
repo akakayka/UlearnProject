@@ -13,8 +13,7 @@
         <div class="table-container">
           <div class="first-column-container">
             <div class="text">
-            <p class="stat-info-pop">Из данных, полученных с портала HH.ru мы видим, что зарплаты с годами имеют свойство расти. Свою роль в этом играет инфляция, или не инфляция. Я не знаю, я типо программист, а не экономист, пишу это, чтобы занять место. А текст выглядел обьемным.</p>
-            <p class="stat-info-pop">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sequi voluptate aperiam architecto enim quae commodi. Cumque, asperiores. Rerum, accusantium? Corporis eos eveniet alias eius. Maxime itaque officiis culpa earum dolorum! Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae quae optio a fugit hic recusandae ex vero, velit repellat reiciendis deserunt nesciunt in itaque consectetur tenetur dolorum dolor ipsa animi.</p>
+              <p class="stat-info-pop">{{ content.text_actual1 }}</p>
             </div>
             <img src="{% static '/get-statistic/graphics/salary_year.png' %}" class="big-graphic stat-image">
           </div>
@@ -54,10 +53,8 @@
         <div class="table-container">
           <div class="first-column-container">
             <div class="text">
-            <p class="stat-info-pop">Динамика уровня зарплат по годам для профессии 1С-разработчика не сильно отличается от динамики уровня зарплат по годам. Я не знаю, что ещё сказать по этому поводу, переходим к лорему.</p>
-            <p class="stat-info-pop">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Facere eveniet nemo at voluptate officiis nisi minima nobis! Debitis id minima dolorem alias ex dolorum voluptatum, autem quam impedit, rerum pariatur.</p>
-            <p class="stat-info-pop">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Consequatur ea fuga aut culpa, aperiam perferendis molestias, dolore recusandae voluptatum voluptatibus similique accusantium quos repellat exercitationem amet totam quis! Atque, expedita.</p>
-          </div>
+              <p class="stat-info-pop">{{ content.text_actual3 }}</p>
+            </div>
             <img src="{% static '/get-statistic/graphics/salary_year_vac.png' %}" class="big-graphic stat-image">
           </div>
         <img src="{% static '/get-statistic/graphics/table_salary_year_vac.png' %}" width="400" class="table stat-image">
@@ -71,9 +68,7 @@
         <div class="table-container">
           <div class="first-column-container">
             <div class="text">
-            <p class="stat-info-pop">Как мы видим, количество вакансий для 1С-разработчиков с годами также увеличивается, это может быть связано с цифровизацией нашего общества, развитием сферы IT. </p>
-            <p class="stat-info-pop">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga adipisci ab qui atque accusantium omnis cupiditate ullam. Quidem quaerat magnam animi consectetur in, modi aut dicta expedita distinctio, libero sapiente?</p>
-            <p class="stat-info-pop">Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor dignissimos atque cupiditate voluptates quod a eius iure consequatur tempore enim, amet laborum ad. Optio quae deserunt adipisci ratione ex officia.</p>
+            <p class="stat-info-pop">{{ content.text_actual4 }}</p>
             </div>
             <img src="{% static '/get-statistic/graphics/count_year_vac.png' %}" class="big-graphic stat-image">
           </div>

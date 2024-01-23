@@ -42,8 +42,8 @@ class Content(models.Model):
     text_actual2 = models.TextField(verbose_name='Текст на странице востребованности количества по годам')
     text_actual3 = models.TextField(verbose_name='Текст на странице востребованности зарплат по годам для вакансии')
     text_actual4 = models.TextField(verbose_name='Текст на странице востребованности количества по годам для вакансии')
-    text_geography1 = models.TextField(verbose_name='Текст на странице географии зарплат по годам')
-    text_geography2 = models.TextField(verbose_name='Текст на странице географии количества по годам')
-    text_geography3 = models.TextField(verbose_name='Текст на странице географии зарплат по годам для вакансии')
-    text_geography4 = models.TextField(verbose_name='Текст на странице географии количества по годам для вакансии')
+    text_geography1 = models.TextField(verbose_name='Текст на странице географии зарплат по городам')
+    text_geography2 = models.TextField(verbose_name='Текст на странице географии количества по городам')
+    text_geography3 = models.TextField(verbose_name='Текст на странице географии зарплат по городам для вакансии')
+    text_geography4 = models.TextField(verbose_name='Текст на странице географии количества по городам для вакансии')
 
