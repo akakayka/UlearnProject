@@ -6,7 +6,15 @@
 {% block content %}
     <main class="main-content">
       <h1>Навыки</h1>
+      <div class="skill-container">
+        <h2 class="stat-header">ТОП-20 навыков</h2>
+        <img src="{% static '/get-statistic/graphics/skills.png' %}">
+      </div>
 
+      <div class="skill-container">
+        <h2 class="stat-header">ТОП-20 навыков для профессии 1С-разработчика</h2>
+        <img src="{% static '/get-statistic/graphics/skills_vac.png' %}">
+      </div>
     </main>
 
     <script src="{% static 'scrips/font.js'%"}></script>

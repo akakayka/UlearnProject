@@ -4,10 +4,41 @@
 
 
 {% block content %}
-    <main class="main-content">
-      <h1></h1>
+<main class="main-content">
+  <section class="hero">
+    <h1>Последние вакансии</h1>
+    <p class="help-me">Ниже находится список вакансий, появившихся на HH.ru за последние 24 часа.</p>
+    {% for vacancy in vacancies %}
+    <div class="vacancy-card">
+      <h2 class="vacancy-name">{{ vacancy.name }}</h2>
+      <div class="vacancy-text">
+      <p class="vacancy-desc">{{ vacancy.description }}</p>
       
-    </main>
+      </div>
+      <div class="vacancy-info">
+        <div class="first-column-info">
+          <p class="company"><span class="span-text">Компания</span>: {{ vacancy.employer }}</p>
+          <p class="salary-info"><span class="span-text">Оклад</span>: {{ vacancy.salary }}</p>
+          <p class="city-info"><span class="span-text">Город</span>: {{ vacancy.area }}</p>
+          <p class="date-info"><span class="span-text">Дата публикации</span>: {{ vacancy.published_at }}</p>
+        </div>
+        <div class="second-column-info">
+          <h3 class="skill-header">Навыки</h3>
+          <ul class="vacancy-skills">
+            {% for skill in vacancy.skills %}
+            <li class="skill">{{ skill }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  <section class="news">
+    
+  </section>
+  
+</main>
 
     <script src="{% static 'scrips/font.js'%"}></script>
     <script src="{% static 'scrips/theme.js'%}"></script>
