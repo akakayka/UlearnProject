@@ -47,6 +47,10 @@ body {
   
 }
 
+.stat-header:not(:first-child) {
+  margin-top: 50px;
+}
+
 .stat-header {
   text-align: center;
   font-size: 24px;
