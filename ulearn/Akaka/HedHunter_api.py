@@ -1,6 +1,4 @@
 import re
-from datetime import datetime
-
 import requests
 
 class HH_api:
